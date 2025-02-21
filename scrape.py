@@ -1,48 +1,71 @@
+# main.py - Cameron Archibald and Nader Hdeib, 21-02-2025
+# Webscraping of realtor.ca
+
+import geocode
+
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import time
 import re
-import pickle
 
 
 # Get URL based on page number TODO allow different cities to be inputted
 def get_url(pg) -> str:
     return f"https://www.realtor.ca/map#view=list&CurrentPage={pg}&Sort=6-D&GeoIds=g30_dxgnyskn&GeoName=Halifax%2C%20NS&PropertyTypeGroupID=1&TransactionTypeId=2&PropertySearchTypeId=1&Currency=CAD&HiddenListingIds=&IncludeHiddenListings=false"
 
-# Read max number of pages
+# Read max number of pages, removing + if 50+
 def find_num_pages(sp: BeautifulSoup) -> int:
-    # TODO use rstrip
-    return int(re.sub(r'\+', '',(sp.find_all('span', attrs={'class': 'paginationTotalPagesNum'})[2]).text))
+    return int((sp.find_all('span', attrs={'class': 'paginationTotalPagesNum'})[2]).text.rstrip("+"))
 
+# Store housing datapoints for a given city
 class CityData:
     def __init__(self, name: str):
         self.city_name = name
         self.house_data = []
 
     # TODO prefer to use dataframe rather than array of dictionaries, no need to store keys 600 times
+    # Add a datapoint with address, price, and coordinates
     def add_house(self, address: str, price: str):
-        self.house_data.append({'address': address, 'price': int(re.sub(r'[$|,]', '', price))})
+        coords = geocode.geocode(address)
+        self.house_data.append({'address': address, 'price': int(re.sub(r'[$|,]', '', price)), 'coords': coords})
 
+    # Search list for entries that match a specific address
+    def find_addresses(self, address: str) -> dict | None:
+        matches = [house for house in self.house_data if house['address'] == address]
+        if matches:
+            return matches[0] # Return first match
+        else:
+            return None
 
-def scrape(city_name: str) -> CityData:
-    city = CityData(city_name)
+# Scraping functionality
+def scrape(city: CityData = None, city_name: str = "default", start_page: int = 1, max_batch_size: int = 600) -> CityData:
+    # No existing CityData object provided, create one
+    if city is None:
+        city = CityData(city_name)
 
     # Open driver on first page
     driver = webdriver.Chrome()
     driver.get(url=get_url(pg=1))
 
+    # Breakpoint here to pass captcha TODO dynamically detect when captcha completed
     char = ''
     while char != 'c':
         char = input("Enter 'c' when captcha complete: ")
-    pass  # Breakpoint here to pass captcha TODO dynamically detect when captcha completed
+
+    # Read number of pages from html
+    num_pages = find_num_pages(sp=BeautifulSoup(driver.page_source, 'html.parser'))
 
     count = 1  # How many houses have been found
-    page = 1
-    num_pages = 1
-    found_num_pages = False
+    count_new = 1 # How many new houses have been added to list
+    page = start_page # Page to look at
 
     # Go through pages
     while page <= num_pages:
+        # Because data collection is slow, exit before all 50 pages have been read to minimize data loss
+        if count_new > max_batch_size:
+            break
+
+        # Open driver
         driver.get(url=get_url(pg=page))
         driver.refresh()
         time.sleep(2)  # Wait for page to load TODO make more intelligent waiting based on the driver itself
@@ -50,24 +73,22 @@ def scrape(city_name: str) -> CityData:
         # Get source code
         soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-        # Read max number of pages and set the loop limit
-        if not found_num_pages:
-            num_pages = find_num_pages(sp=soup)
-            found_num_pages = True
-
-
         # Find all cards with price element
         entries_on_page = soup.find_all('div', attrs={'class': 'listingCardPrice'})
 
-        # Print price and address (address is two siblings away from price)
-        # TODO store this information
+        # Save price and address (address is two siblings away from price)
         # TODO filter out land
         for price_entry in entries_on_page:
-            city.add_house(address=price_entry.next_sibling.next_sibling.text, price=price_entry.text)
-
             print(price_entry.text)
             print(price_entry.next_sibling.next_sibling.text)
             print(count)
+
+            if city.find_addresses(address=price_entry.next_sibling.next_sibling.text) is None:
+                city.add_house(address=price_entry.next_sibling.next_sibling.text, price=price_entry.text)
+                count_new += 1
+            else:
+                print("Repeated house")
+
             count += 1
 
         page += 1
@@ -75,26 +96,4 @@ def scrape(city_name: str) -> CityData:
     driver.quit()
     return city
 
-# TODO make this a function
-# TODO allow for different cities to be inputted
-command = ''
-while command != 'q':
-    command = input('Enter command: ')
-    match command:
-        case 's':
-            halifax = scrape(city_name="Halifax")
-            pass
-        case 'p':
-            f = open('halifax', 'wb')
-            if halifax:
-                pickle.dump(halifax, f)
-            f.close()
-            pass
-        case 'u':
-            f = open('halifax', 'rb')
-            read_data = pickle.load(f)
-            f.close()
-            if read_data:
-                for house in read_data.house_data:
-                    print(house)
-            pass
+
