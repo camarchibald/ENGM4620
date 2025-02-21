@@ -37,11 +37,13 @@ class CityData:
         else:
             return None
 
+    # Print all housing data
+    def print_data(self):
+        for house in self.house_data:
+            print(house)
+
 # Scraping functionality
-def scrape(city: CityData = None, city_name: str = "default", start_page: int = 1, max_batch_size: int = 600) -> CityData:
-    # No existing CityData object provided, create one
-    if city is None:
-        city = CityData(city_name)
+def scrape(city: CityData, start_page: int = 1, max_batch_size: int = 600) -> CityData:
 
     # Open driver on first page
     driver = webdriver.Chrome()

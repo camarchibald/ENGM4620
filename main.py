@@ -6,39 +6,78 @@ from scrape import CityData
 
 import pickle
 
+# Print all cities that have data
+def print_cities(data: list[CityData]):
+    if data:
+        for i, city in enumerate(data):
+            print("Position: ", i, " Name: ", city.city_name, " Houses: ", len(city.house_data))
+    else:
+        print("No data, try unpickling")
 
-# TODO allow for different cities to be inputted
+# Ask user to enter index, validate that it doesn't exceed amount of cities
+def ask_and_validate_index(data: list[CityData]) -> int | None:
+    print_cities(data)
+    i = input("Choose a city by index (q to go back): ")
+    if i.isnumeric():
+        i = int(i)
+        if i < len(data):
+            return i
+        else:
+            print("Invalid index")
+            return None
+    else:
+        return None
+
+
 # Main control loop
 def main():
+    data = []
+
     command = ''
     while command != 'q':
-        command = input('Enter command: ')
+        command = input('\nEnter command: ')
 
         match command:
             # Scrape the data
-            # TODO if halifax is not created or unpickled this fails
             case 's':
-                halifax = scrape.scrape(city=halifax, max_batch_size=50)
-                pass
+                i = ask_and_validate_index(data)
+                if i is not None:
+                    data[i] = scrape.scrape(city=data[i], max_batch_size=50)
 
             # Pickle the data
-            # TODO if halifax is not created this fails
+            # TODO: Data will be overwritten if it isn't unpickled first
             case 'p':
-                if halifax:
-                    f = open('halifax', 'wb')
-                    pickle.dump(halifax, f)
+                if data:
+                    f = open('data', 'wb')
+                    pickle.dump(data, f)
                     f.close()
+                else:
+                    print("No data")
                 pass
 
             # Unpickle the data
             case 'u':
-                f = open('halifax', 'rb')
-                halifax = pickle.load(f)
+                f = open('data', 'rb')
+                data = pickle.load(f)
                 f.close()
-                if halifax:
-                    for house in halifax.house_data:
-                        print(house)
+                print_cities(data)
                 pass
+
+            # Create new city
+            case 'n':
+                name = input('Enter city name (q to go back): ')
+                if name != "q":
+                    data.append(CityData(name=name))
+                pass
+
+            # View data of one city
+            case 'v':
+                i = ask_and_validate_index(data)
+                if i is not None:
+                    data[i].print_data()
+                pass
+
+
 
 if __name__ == "__main__":
     main()
