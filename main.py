@@ -3,8 +3,10 @@
 
 import scrape
 from scrape import CityData
+import plot
 
 import pickle
+
 
 # Print all cities that have data
 def print_cities(data: list[CityData]):
@@ -13,6 +15,7 @@ def print_cities(data: list[CityData]):
             print("Position: ", i, " Name: ", city.city_name, " Houses: ", len(city.house_data))
     else:
         print("No data, try unpickling")
+
 
 # Ask user to enter index, validate that it doesn't exceed amount of cities
 def ask_and_validate_index(data: list[CityData]) -> int | None:
@@ -36,13 +39,13 @@ def main():
     command = ''
     while command != 'q':
         command = input('\nEnter command: ')
-
+        pass
         match command:
             # Scrape the data
             case 's':
                 i = ask_and_validate_index(data)
                 if i is not None:
-                    data[i] = scrape.scrape(city=data[i], max_batch_size=50)
+                    data[i] = scrape.scrape(city=data[i], max_batch_size=10)
 
             # Pickle the data
             # TODO: Data will be overwritten if it isn't unpickled first
@@ -77,6 +80,12 @@ def main():
                     data[i].print_data()
                 pass
 
+            # Create map
+            case 'm':
+                i = ask_and_validate_index(data)
+                if i is not None:
+                    plot.plot(data[i])
+                pass
 
 
 if __name__ == "__main__":
