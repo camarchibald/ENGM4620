@@ -30,7 +30,7 @@ class CityData:
     def add_house(self, address: str, price: str):
         coords = geocode.geocode(address)
         self.house_data.append(
-            {'address': address, 'price': int(re.sub(r'[$|,]', '', price)), 'lat': coords[0], 'lon': coords[1]})
+            {'address': address, 'price': int(re.sub(r'[$|,]', '', price)), 'lat': int(coords[0]), 'lon': int(coords[1])})
 
     # Search list for entries that match a specific address
     def find_addresses(self, address: str) -> dict | None:
@@ -51,9 +51,9 @@ class CityData:
 
 # Scraping functionality
 def scrape(city: CityData, start_page: int = 1, max_batch_size: int = 600) -> CityData:
-    # Open driver on first page
+    # Open driver
     driver = webdriver.Chrome()
-    driver.get(url=get_url(pg=1))
+    driver.get(url=get_url(pg=2))
 
     # Breakpoint here to pass captcha TODO dynamically detect when captcha completed
     char = ''

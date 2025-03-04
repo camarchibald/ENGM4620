@@ -1,3 +1,6 @@
+# plot.py - Cameron Archibald and Nader Hdeib, 28-02-2025
+# Plot data from a city
+
 from scrape import CityData
 import pandas as pd
 
