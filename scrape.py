@@ -22,19 +22,20 @@ def find_num_pages(sp: BeautifulSoup) -> int:
 # Store housing datapoints for a given city
 class CityData:
     def __init__(self, name: str):
-        self.city_name = name
-        self.house_data = []
+        self._city_name = name
+        self._house_data = []
 
     # TODO prefer to use dataframe rather than array of dictionaries, no need to store keys 600 times
     # Add a datapoint with address, price, and coordinates
     def add_house(self, address: str, price: str):
         coords = geocode.geocode(address)
-        self.house_data.append(
-            {'address': address, 'price': int(re.sub(r'[$|,]', '', price)), 'lat': int(coords[0]), 'lon': int(coords[1])})
+        self._house_data.append(
+            {'address': address, 'price': int(re.sub(r'[$|,]', '', price)), 'lat': int(coords[0]),
+             'lon': int(coords[1])})
 
     # Search list for entries that match a specific address
     def find_addresses(self, address: str) -> dict | None:
-        matches = [house for house in self.house_data if house['address'] == address]
+        matches = [house for house in self._house_data if house['address'] == address]
         if matches:
             return matches[0]  # Return first match
         else:
@@ -42,11 +43,14 @@ class CityData:
 
     # Print all housing data
     def print_data(self):
-        for house in self.house_data:
+        for house in self._house_data:
             print(house)
 
+    def get_city_name(self):
+        return self._city_name
+
     def get_house_data(self):
-        return self.house_data
+        return self._house_data
 
 
 # Scraping functionality

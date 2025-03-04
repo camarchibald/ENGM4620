@@ -8,11 +8,12 @@ import os
 import re
 import time
 
+
 # Take address string and convert to coordinate tuple
 def geocode(address: str) -> tuple[str, str] | tuple[None, None]:
-    address = re.sub(r' ', '+', address) # Remove spaces from string
+    address = re.sub(r' ', '+', address)  # Remove spaces from string
     url = f"https://geocode.maps.co/search?q={address}&api_key={os.environ["GEOCODE_API_KEY"]}"
-    time.sleep(1.2) # API calls must be less than 1 per second TODO limit without sleeping
+    time.sleep(1.2)  # API calls must be less than 1 per second TODO limit without sleeping
     response = requests.get(url)
 
     try:
