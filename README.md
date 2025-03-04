@@ -5,7 +5,12 @@ This python project is aimed at prospective homeowners in any area looking to vi
 The current phase of the project is a webscraper for realtor.ca which collects current housing listings, and a mapping feature to show the listings.
 
 ## Setup:
-- Venv
+- Clone repository onto local machine.
+- Create virtual environment in same level directory where repository is cloned.
+- Run the activate.bat file in the virtual environment.
+- Run the command '../VIRTUALENVNAME/Scripts/pip.exe install -r requirements.txt' from the git repository directory.
+- Please wait about 2 minutes for all packages to be installed.
+- Run the command '../VIRTUALENVNAME/Scripts/python.exe main.py' to run the python script.
 
 ## Features:
 The project is interacted with through a command line interface, entering a letter to activate a command. The commands are listed below:
