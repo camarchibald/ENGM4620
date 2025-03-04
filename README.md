@@ -8,7 +8,7 @@ The current phase of the project is a webscraper for realtor.ca which collects c
 - Clone repository onto local machine.
 - Create virtual environment in same level directory where repository is cloned.
 - Run the activate.bat file in the virtual environment.
-- Run the command '../VIRTUALENVNAME/Scripts/pip.exe install -r requirements.txt' from the git repository directory.
+- Run the command '../VIRTUALENVNAME/Scripts/pip3.exe install -r requirements.txt' from the git repository directory.
 - Please wait about 2 minutes for all packages to be installed.
 - Run the command '../VIRTUALENVNAME/Scripts/python.exe main.py' to run the python script.
 
@@ -40,3 +40,4 @@ Inside the main program is a list of CityData objects. This can be saved and rec
 - Use Dr. Hammad's suggested interface for easier gathering of previous trends. Current scraping from realtor.ca is slow and risks blocking.
 - Expand on mapping functionality by giving more information by hovering on a datapoint, and improve the price colouring gradient.
 - Implement data prediction analysis using ML. Needs lots of past data to work which is a limitation of the current functionality.
+- Implement env file for api key instead of .txt (still not pushed to git).

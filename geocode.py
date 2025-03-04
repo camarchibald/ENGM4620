@@ -7,12 +7,14 @@ import json
 import os
 import re
 import time
+from dotenv import load_dotenv
 
 
 # Take address string and convert to coordinate tuple
-def geocode(address: str) -> tuple[str, str] | tuple[None, None]:
+def geocode(address: str) -> tuple[float, float] | tuple[None, None]:
     address = re.sub(r' ', '+', address)  # Remove spaces from string
-    url = f"https://geocode.maps.co/search?q={address}&api_key={os.environ["GEOCODE_API_KEY"]}"
+    url = f"https://geocode.maps.co/search?q={address}&api_key={open("keys.txt","r").read()}"
+    # TODO use os.getenv('GEOCODE_API_KEY')
     time.sleep(1.2)  # API calls must be less than 1 per second TODO limit without sleeping
     response = requests.get(url)
 
@@ -20,15 +22,19 @@ def geocode(address: str) -> tuple[str, str] | tuple[None, None]:
         r = json.loads(response.text)
         if r:
             try:
-                result = (r[0]['lat'], r[0]['lon'])
+                result = (float(r[0]['lat']), float(r[0]['lon']))
             except:
                 result = (None, None)
                 print("Bad index on response")
         else:
             result = (None, None)
             print("No coordinates found")
-    except:
+    except Exception as e:
+        print(e)
         result = (None, None)
         print("No response")
 
     return result
+
+# TODO: Use .env not text file
+#load_dotenv()

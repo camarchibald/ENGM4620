@@ -3,3 +3,4 @@ plotly~=6.0.0
 beautifulsoup4~=4.12.3
 selenium~=4.28.1
 requests~=2.32.3
+dotenv~=0.9.9

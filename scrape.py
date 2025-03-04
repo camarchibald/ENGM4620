@@ -30,8 +30,8 @@ class CityData:
     def add_house(self, address: str, price: str):
         coords = geocode.geocode(address)
         self.house_data.append(
-            {'address': address, 'price': int(re.sub(r'[$|,]', '', price)), 'lat': int(coords[0]),
-             'lon': int(coords[1])})
+            {'address': address, 'price': int(re.sub(r'[$|,]', '', price)), 'lat': coords[0],
+             'lon': coords[1]})
 
     # Search list for entries that match a specific address
     def find_addresses(self, address: str) -> dict | None:
