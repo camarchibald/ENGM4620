@@ -12,7 +12,7 @@ import pickle
 def print_cities(data: list[CityData]):
     if data:
         for i, city in enumerate(data):
-            print("Position: ", i, " Name: ", city.city_name, " Houses: ", len(city.house_data))
+            print("Position: ", i, " Name: ", city.get_city_name(), " Houses: ", len(city.get_house_data()))
     else:
         print("No data, try unpickling")
 
