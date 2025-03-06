@@ -25,7 +25,6 @@ class CityData:
         self.city_name = name
         self.house_data = []
 
-    # TODO prefer to use dataframe rather than array of dictionaries, no need to store keys 600 times
     # Add a datapoint with address, price, and coordinates
     def add_house(self, address: str, price: str):
         coords = geocode.geocode(address)

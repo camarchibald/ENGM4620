@@ -37,6 +37,9 @@ def main():
     data = []
 
     command = ''
+
+    # Command line input of commands
+    # TODO: print list of possible commands each iteration
     while command != 'q':
         command = input('\nEnter command: ')
         pass
@@ -45,7 +48,8 @@ def main():
             case 's':
                 i = ask_and_validate_index(data)
                 if i is not None:
-                    data[i] = scrape.scrape(city=data[i], max_batch_size=10)
+                    page = int(input("Enter starting page number: "))
+                    data[i] = scrape.scrape(city=data[i], max_batch_size=50, start_page=page)
 
             # Pickle the data
             # TODO: Data will be overwritten if it isn't unpickled first
